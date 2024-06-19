@@ -1,0 +1,88 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .form-control.invalid {
+    border-color: #d20404;
+    
+  }
+
+  .validation-message {
+    color: #d20404;
+    font-weight: bolder;
+    margin-top: 5px;
+    font-weight: bolder;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-right: 10%; margin-left: 10%; margin-top: 2%;">
+    <form method="POST" action="/admin/edit-class/<%= classs._id %>" onsubmit="return validateForm()" onchange="return validateForm()">
+      <h2><b>Edit Class</b></h2>
+      <div class="form-group">
+        <label for="number">Class Number</label>
+        <input type="number" class="form-control <%= validationErrors.find(e => e.param === 'number') ? 'invalid' : '' %>" name="number" id="number" placeholder="Enter class number" required value="<%= classs.number %>">
+        <span class="validation-message" id="number-error"></span>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update Class</button>
+      
+    </form>
+  </main>
+
+  <%- include('../includes/end.ejs') %>
+</body>
+<script>
+  function validateForm() {
+    let number = document.getElementById('number').value;
+
+    let numberCheck = /^([1-9]|1[0-2])+$/;
+
+    document.getElementById('number-error').innerHTML = "";
+    document.getElementById('number').classList.remove('invalid');
+
+    if (!numberCheck.test(number)) {
+      document.getElementById('number-error').innerHTML = "Invalid Class Number! Please enter a valid number.";
+      document.getElementById('number').classList.add('invalid');
+      return false;
+    }
+
+    return true;
+  }
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>

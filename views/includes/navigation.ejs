@@ -1,0 +1,95 @@
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- MDB -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+
+  <div class="container">
+
+
+
+
+    <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+
+
+    <div class="collapse navbar-collapse" id="navbarButtonsExample">
+      <% if(isAuthenticated)  { %>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Dashboard</a>
+        </li>
+
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="/subjects/History">History</a>
+        </li> -->
+        <!-- < % } %>
+        < % if(user && user.email === 'admin@admin.com' && user.password === '123456') { %> -->
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/add-subject">Add Subject</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/add-teacher">Add Teacher</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/add-class">Add Class</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/add-division">Add Division</a>
+        </li>
+        <% } %>
+      </ul>
+      <% if(!isAuthenticated) { %>
+      <div class="d-flex align-items-center">
+        <a href="/login" data-mdb-ripple-init type="button" class="btn btn-link px-3 me-2">
+          Login
+        </a>
+        <a href="/signup" data-mdb-ripple-init type="button" class="btn btn-primary me-3">
+          Sign up
+        </a>
+      </div>
+      <% } %>
+      <% if (isAuthenticated) { %>
+      <div class="dropdown" style="margin-right: 1%;">
+        <a class="btn btn-secondary dropdown-toggle" href="" role="button" id="dropdownMenuLink" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+          ADMIN
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <li><a class="dropdown-item" href="/admin/subjects">Subjects</a></li>
+          <li><a class="dropdown-item" href="/admin/teachers">Teachers</a></li>
+          <li><a class="dropdown-item" href="/admin/classes">Classes</a></li>
+          <li><a class="dropdown-item" href="/admin/divisions">Divisions</a></li>
+        </ul>
+      </div>
+
+
+      <form id="logout-form" action="/logout" method="POST" style="display: none;">
+        <button type="submit">Logout</button>
+      </form>
+      <a href="#" data-mdb-ripple-init type="button" class="btn btn-primary me-3" onclick="document.getElementById('logout-form').submit();">
+        Logout
+      </a>
+      <% } %>
+
+
+
+    </div>
+
+  </div>
+
+</nav>
+
+<!-- MDB -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>

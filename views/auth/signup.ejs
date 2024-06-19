@@ -1,0 +1,211 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .form-control.invalid {
+    border-color: #d20404;
+  }
+
+  .validation-message {
+    color: #d20404;
+    font-weight: bolder;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-right: 10%; margin-left: 10%; margin-top: 2%;">
+    <form method="POST" action="/signup" onsubmit="return validateForm()">
+      <h2><b>Sign Up</b></h2>
+
+      <% if (errorMessage) { %>
+      <div class="validation-message"><%= errorMessage %></div>
+      <% } %>
+
+      <div class="form-group">
+        <label for="username">Enter Username</label>
+        <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'username') ? 'invalid' : '' %>" name="username" id="username" placeholder="Enter user name" value="<%= oldInput ? oldInput.username : '' %>">
+        <span class="validation-message" id="username-error"><%= validationErrors.find(e => e.param === 'username') ? validationErrors.find(e => e.param === 'username').msg : '' %></span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control <%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>" name="email" id="email" placeholder="Enter email" value="<%= oldInput ? oldInput.email : '' %>">
+        <span class="validation-message" id="email-error"><%= validationErrors.find(e => e.param === 'email') ? validationErrors.find(e => e.param === 'email').msg : '' %></span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control <%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" placeholder="Password" value="<%= oldInput ? oldInput.password : '' %>">
+        <span id="password-error" class="validation-message"><%= validationErrors.find(e => e.param === 'password') ? validationErrors.find(e => e.param === 'password').msg : '' %></span>
+      </div>
+
+      <div class="form-group">
+        <label for="code">Country Code</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'code') ? 'invalid' : '' %>" name="code" id="code">
+          <option value="">Select The Country Code</option>
+          <option value="India" <%= oldInput && oldInput.code === 'India' ? 'selected' : '' %>>INDIA +91</option>
+          <option value="china" <%= oldInput && oldInput.code === 'china' ? 'selected' : '' %>>CHINA +86</option>
+          <option value="USA" <%= oldInput && oldInput.code === 'USA' ? 'selected' : '' %>>USA +1</option>
+          <option value="UK" <%= oldInput && oldInput.code === 'UK' ? 'selected' : '' %>>UK +44</option>
+        </select>
+        <span class="validation-message" id="code-error"><%= validationErrors.find(e => e.param === 'code') ? validationErrors.find(e => e.param === 'code').msg : '' %></span>
+      </div>
+
+      <div class="form-group">
+        <label for="number">Number</label>
+        <input type="number" class="form-control <%= validationErrors.find(e => e.param === 'number') ? 'invalid' : '' %>" name="number" id="number" placeholder="Enter Number" value="<%= oldInput ? oldInput.number : '' %>">
+        <span class="validation-message" id="number-error"><%= validationErrors.find(e => e.param === 'number') ? validationErrors.find(e => e.param === 'number').msg : '' %></span>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+  </main>
+
+  <%- include('../includes/end.ejs') %>
+</body>
+
+<script>
+  function validateForm() {
+    let isValid = true;
+
+    if (!validateField('username')) {
+      isValid = false;
+    }
+    if (!validateField('email')) {
+      isValid = false;
+    }
+    if (!validateField('password')) {
+      isValid = false;
+    }
+    if (!validateField('code')) {
+      isValid = false;
+    }
+    if (!validateField('number')) {
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function validateField(fieldId) {
+    let value = document.getElementById(fieldId).value.trim();
+    let isValid = true;
+
+    clearError(fieldId);
+
+    if (fieldId === 'username') {
+      const nameCheck = /^[a-zA-Z\s]{3,30}$/;
+      if (!nameCheck.test(value)) {
+        displayError(fieldId, "Invalid Username! Username must contain only letters and be between 3 to 30 characters long.");
+        isValid = false;
+      }
+    }
+
+    if (fieldId === 'email') {
+      const emailCheck = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (!emailCheck.test(value)) {
+        displayError(fieldId, "Invalid email! Please enter a valid email.");
+        isValid = false;
+      }
+    }
+
+    if (fieldId === 'password') {
+      const passwordCheck = /^[A-Za-z0-9_!@#\$%\^&\*]{6,10}$/;
+      if (!passwordCheck.test(value)) {
+        displayError(fieldId, "Invalid Password! Password must be 6 to 10 characters long.");
+        isValid = false;
+      }
+    }
+
+    if (fieldId === 'code') {
+      if (!value) {
+        displayError(fieldId, "Please select a Country Code.");
+        isValid = false;
+      }
+    }
+
+    if (fieldId === 'number') {
+      const numberCheck = /^[0-9]{10}$/;
+      if (!numberCheck.test(value)) {
+        displayError(fieldId, "Invalid Number! Please enter a valid number.");
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
+  function clearError(fieldId) {
+    document.getElementById(`${fieldId}-error`).innerHTML = "";
+    document.getElementById(fieldId).classList.remove('invalid');
+  }
+
+  function displayError(fieldId, message) {
+    document.getElementById(`${fieldId}-error`).innerHTML = message;
+    document.getElementById(fieldId).classList.add('invalid');
+  }
+
+  function upper() {
+    let name = document.getElementById("username");
+    name.value = name.value.toUpperCase();
+  }
+
+  document.getElementById('username')
+    .addEventListener('input', () => {
+      upper();
+      validateField('username');
+    });
+  document.getElementById('email')
+    .addEventListener('input', () =>
+      validateField('email')
+    );
+  document.getElementById('password')
+    .addEventListener('input', () =>
+      validateField('password')
+    );
+  document.getElementById('code')
+    .addEventListener('change', () =>
+      validateField('code')
+    );
+  document.getElementById('number')
+    .addEventListener('input', () =>
+      validateField('number')
+    );
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>

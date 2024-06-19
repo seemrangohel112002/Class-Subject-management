@@ -1,0 +1,81 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  body {
+    font-family: sans-serif;
+    margin-left: 10%;
+  }
+
+  .msc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    a {
+      display: block;
+      text-decoration: none;
+      padding: 10px 0;
+      color: var(--color-primary);
+      color: var(--color-primary-text);
+      -webkit-transition: all 0.1s ease-in-out;
+      -moz-transition: all 0.1s ease-in-out;
+      -ms-transition: all 0.1s ease-in-out;
+      -o-transition: all 0.1s ease-in-out;
+      transition: all 0.1s ease-in-out;
+
+      &:hover,
+      &:focus,
+      &:active {
+        padding-left: 5px;
+        color: rgb(18, 165, 175);
+      }
+
+      &:first-child {
+        border-radius: 0;
+      }
+
+      &:last-child {
+        border-radius: 0;
+      }
+
+      &.active {
+        padding-left: 5px;
+        background: var(--color-primary);
+        color: #fff;
+      }
+    }
+  }
+
+  .msc-list.msc-list__border {
+    a {
+      border-top: 1px dashed var(--color-border);
+    }
+  }
+</style>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-left: 6%; margin-right: 6%; margin-top: 2%;">
+    <h2><b>You Had <%= sub.length %> Subject <% if(sub.length > 1) { %>s <% } %> in Previous Classes ! </b></h2>
+    <ul class="msc-list">
+      <% for (let subject of sub) { %>
+      <ul class="msc-list msc-list__border">
+        <li style="border: 1px solid rgb(148, 189, 245); border-radius: 5px;">
+          <b><a href="/subjects/<%= subject._id %>" style="margin-left: 10px;"><%= subject.name %></a></b>
+          <span style="margin-left: 10px; color: #666;">Class <% if (subject.classId) { %><%= subject.classId.number %><% } else { %>Not Avaliable<% } %></span>
+        </li></span>
+        </li>
+        <br>
+        <% } %>
+      </ul>
+  </main>
+</body>
+
+<%- include("../includes/end.ejs")  %>
+
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>

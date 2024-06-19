@@ -1,0 +1,71 @@
+<!-- views/admin/subjects.ejs -->
+<%- include('../includes/head.ejs') %>
+<style>
+  body {
+    font-family: sans-serif;
+    margin-left: 10%;
+  }
+
+  .msc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .msc-list a {
+    display: block;
+    text-decoration: none;
+    padding: 10px 0;
+    color: var(--color-primary);
+    transition: all 0.1s ease-in-out;
+  }
+
+  .msc-list a:hover,
+  .msc-list a:focus,
+  .msc-list a:active {
+    padding-left: 5px;
+    color: rgb(18, 165, 175);
+  }
+
+  .msc-list a.active {
+    padding-left: 5px;
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .msc-list.msc-list__border a {
+    border-top: 1px dashed var(--color-border);
+  }
+</style>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-left: 6%; margin-right: 6%; margin-top: 2%">
+    <% if(subs.length > 0) { %>
+    <h2><b>Hello, You have <%= subs.length %> subject<% if(subs.length > 1) { %>s<% } %> in Class <%= subs[0].class %></b></h2>
+    <ul class="msc-list">
+      <% for (let subject of subs) { %>
+      <ul class="msc-list msc-list__border">
+        <li style="border: 1px solid rgb(148, 189, 245); border-radius: 5px;">
+          <b><a href="/subjects/<%= subject._id %>" style="margin-left: 10px;"><%= subject.name %></a></b>
+          <span style="margin-left: 10px; color: #666;">Class <%= subject.classId.number %></span>
+        </li>
+        <br>
+      </ul>
+      <% } %>
+      <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %>
+      <% } else { %>
+      <h1>No Subjects Found!</h1>
+      <% } %>
+    </ul>
+  </main>
+</body>
+
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>
+<%- include("../includes/end.ejs") %>

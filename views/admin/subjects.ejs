@@ -1,0 +1,90 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  body {
+    font-family: sans-serif;
+    margin-left: 10%;
+  }
+
+  .msc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .msc-list a {
+    display: block;
+    text-decoration: none;
+    padding: 10px 0;
+    color: var(--color-primary);
+    color: var(--color-primary-text);
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .msc-list a:hover,
+  .msc-list a:focus,
+  .msc-list a:active {
+    padding-left: 5px;
+    color: rgb(18, 165, 175);
+  }
+
+  .msc-list a:first-child {
+    border-radius: 0;
+  }
+
+  .msc-list a:last-child {
+    border-radius: 0;
+  }
+
+  .msc-list a.active {
+    padding-left: 5px;
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .msc-list.msc-list__border a {
+    border-top: 1px dashed var(--color-border);
+  }
+</style>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-left: 6%; margin-right: 6%; margin-top: 2%">
+    <% if(subs.length > 0) { %>
+    <h2><b>Hello, Admin! Here are the list of subjects.</b></h2>
+    <ul class="msc-list">
+      <% for (let subject of subs) { %>
+      <ul class="msc-list msc-list__border">
+        <li style="border: 1px solid rgb(148, 189, 245); border-radius: 5px;">
+          <b><a href="/subjects/<%= subject._id %>" style="margin-left: 10px;"><%= subject.name %></a></b>
+          <span style="margin-left: 10px; color: #666;">Class <% if (subject.classId) { %><%= subject.classId.number %><% } else { %>Not Assigned<% } %></span>
+
+          <div class="d-flex align-items-center">
+            <a href="/admin/edit-subject/<%= subject._id %>?edit=true" data-mdb-ripple-init type="button" class="btn btn-link px-3 me-2" style="margin-left:40%; border-radius: 4px;">Edit</a>
+            <form action="/admin/delete-subject/<%= subject._id %>" method="POST">
+              <button type="submit" class="btn btn-link px-3 me-3">Delete</button>
+            </form>
+          </div>
+        </li>
+        <br>
+      </ul>
+      <% } %>
+    </ul>
+    <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %>
+    <% } else { %>
+    <h1>No Subjects Found!</h1>
+    <% } %>
+  </main>
+</body>
+
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>
+<%- include("../includes/end.ejs") %>

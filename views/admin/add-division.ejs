@@ -1,0 +1,140 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .form-control.invalid {
+    border-color: #d20404;
+  }
+
+  .validation-message {
+    color: #d20404;
+    margin-top: 5px;
+    font-weight: bolder;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-right: 10%; margin-left: 10%; margin-top: 2%;">
+    <form method="POST" action="/admin/add-division" onsubmit="return validateForm()">
+      <h2><b>Add Division</b></h2>
+      <% if (errorMessage) { %>
+      <div class="validation-message"><%= errorMessage %></div>
+      <% } %>
+      <div class="form-group">
+        <label for="class">Class</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'class') ? 'invalid' : '' %>" name="class" id="class" onblur="validateField('class')">
+          <option value="">Select The Class</option>
+          <% classes.forEach(cls => { %>
+          <option value="<%= cls._id %>" <%= typeof classId !== 'undefined' && classId == cls._id ? 'selected' : '' %>><%= cls.number %></option>
+          <% }) %>
+        </select>
+        <span class="validation-message" id="class-error">
+          <% if (validationErrors.find(e => e.param === 'class')) { %>
+          <%= validationErrors.find(e => e.param === 'class').msg %>
+          <% } %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="name">Enter Division Name</label>
+        <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'name') ? 'invalid' : '' %>" name="name" id="name" placeholder="Enter division name" value="<%= typeof name !== 'undefined' ? name : '' %>" onblur="validateField('name')" onchange="upper()">
+        <span class="validation-message" id="name-error">
+          <% if (validationErrors.find(e => e.param === 'name')) { %>
+          <%= validationErrors.find(e => e.param === 'name').msg %>
+          <% } %>
+        </span>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Division</button>
+      <a href="/admin/divisions" class="btn btn-primary">View Divisions</a>
+    </form>
+  </main>
+</body>
+
+<script>
+  function validateForm() {
+    let isValid = true;
+
+    let name = document.getElementById('name').value;
+    let classValue = document.getElementById('class').value;
+
+    let nameCheck = /^[a-zA-Z]{1}$/;
+
+    clearErrors();
+
+    if (!nameCheck.test(name)) {
+      displayError('name', "Invalid Name! Name must be a single letter.");
+      isValid = false;
+    }
+
+    if (classValue === '') {
+      displayError('class', "Please select a class.");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function clearErrors() {
+    document.getElementById('name-error').innerHTML = "";
+    document.getElementById('class-error').innerHTML = "";
+    document.getElementById('name').classList.remove('invalid');
+    document.getElementById('class').classList.remove('invalid');
+  }
+
+  function displayError(field, message) {
+    document.getElementById(`${field}-error`).innerHTML = message;
+    document.getElementById(field).classList.add('invalid');
+  }
+
+  function validateField(fieldId) {
+    let value = document.getElementById(fieldId).value;
+    let nameCheck = /^[a-zA-Z]{1}$/;
+
+    document.getElementById(`${fieldId}-error`).innerHTML = "";
+    document.getElementById(fieldId).classList.remove('invalid');
+
+    if (fieldId === 'name' && !nameCheck.test(value)) {
+      displayError(fieldId, "Invalid Name! Name must be a single letter.");
+    }
+
+    if (fieldId === 'class' && value === '') {
+      displayError(fieldId, "Please select a class.");
+    }
+  }
+
+  document.getElementById('name').addEventListener('input', () => validateField('name'));
+  document.getElementById('class').addEventListener('change', () => validateField('class'));
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+
+  function upper() {
+    let name = document.getElementById("name");
+    name.value = name.value.toUpperCase();
+  }
+</script>

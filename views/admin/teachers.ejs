@@ -1,0 +1,95 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  body {
+    font-family: sans-serif;
+    margin-left: 10%;
+  }
+
+  .msc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    a {
+      display: block;
+      text-decoration: none;
+      padding: 10px 0;
+      color: var(--color-primary);
+      color: var(--color-primary-text);
+      -webkit-transition: all 0.1s ease-in-out;
+      -moz-transition: all 0.1s ease-in-out;
+      -ms-transition: all 0.1s ease-in-out;
+      -o-transition: all 0.1s ease-in-out;
+      transition: all 0.1s ease-in-out;
+
+      &:hover,
+      &:focus,
+      &:active {
+        padding-left: 5px;
+        color: rgb(18, 165, 175);
+      }
+
+      &:first-child {
+        border-radius: 0;
+      }
+
+      &:last-child {
+        border-radius: 0;
+      }
+
+      &.active {
+        padding-left: 5px;
+        background: var(--color-primary);
+        color: #fff;
+      }
+    }
+  }
+
+  .msc-list.msc-list__border {
+    a {
+      border-top: 1px dashed var(--color-border);
+    }
+  }
+</style>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-left: 6%; margin-right: 6%; margin-top: 2%">
+    <% if(teachers.length > 0) { %>
+    <h2><b>Hello, Admin! Here are the list of Teachers.</b></h2>
+    <ul class="msc-list">
+      <% for (let teacher of teachers) { %>
+      <ul class="msc-list msc-list__border">
+        <li style="border: 1px solid rgb(148, 189, 245); border-radius: 5px;">
+          <b><a href="/admin/teachers/<%= teacher._id %>" style="margin-left: 10px;"><%= teacher.name %></a></b>
+          <span style="margin-left: 10px; color: #666;">Class <% if (teacher.classId) { %><%= teacher.classId.number %><% } else { %>Not Assigned<% } %></span>
+
+
+          <div class="d-flex align-items-center">
+            <a href="/admin/edit-teacher/<%= teacher._id %>?edit=true" data-mdb-ripple-init type="button" class="btn btn-link px-3 me-2" style="margin-left:40%; border-radius: 4px;">Edit</a>
+            <form action="/admin/delete-teacher/<%= teacher._id %>" method="POST">
+              <button type="submit" class="btn btn-link px-3 me-2">Delete</button>
+            </form>
+          </div>
+        </li>
+
+        <br>
+        <% } %>
+        <%- include('../includes/pagination.ejs', {currentPage: currentPage, nextPage: nextPage, previousPage: previousPage, lastPage: lastPage, hasNextPage: hasNextPage, hasPreviousPage: hasPreviousPage}) %>
+        <% } else { %>
+        <h1>No Teachers Found!</h1>
+        <% } %>
+      </ul>
+
+  </main>
+</body>
+
+
+<script>
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+</script>
+<%- include("../includes/end.ejs")  %>

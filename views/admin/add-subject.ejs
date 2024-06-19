@@ -1,0 +1,169 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .form-control.invalid {
+    border-color: #d20404;
+  }
+
+  .validation-message {
+    color: #d20404;
+    font-weight: bolder;
+    margin-top: 5px;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-right: 10%; margin-left: 10%; margin-top: 2%;">
+    <form method="POST" action="/admin/add-subject" onsubmit="return validateForm()">
+      <h2><b>Add Subject</b></h2>
+      <% if (errorMessage) { %>
+      <div class="validation-message"><%= errorMessage %></div>
+      <% } %>
+
+      <div class="form-group">
+        <label for="name">Enter Subject Name</label>
+        <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'name') ? 'invalid' : '' %>" name="name" id="name" placeholder="Enter Subject name" value="<%= subject.name || '' %>" onchange="validateField('name')" onchange=" return upper()">
+        <span class="validation-message" id="name-error">
+          <%= validationErrors.find(e => e.param === 'name') ? validationErrors.find(e => e.param === 'name').msg : '' %>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control <%= validationErrors.find(e => e.param === 'description') ? 'invalid' : '' %>" name="description" id="description" placeholder="Enter description" onchange="validateField('description')"><%= subject.description || '' %></textarea>
+        <span class="validation-message" id="description-error">
+          <%= validationErrors.find(e => e.param === 'description') ? validationErrors.find(e => e.param === 'description').msg : '' %>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="class">Class</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'class') ? 'invalid' : '' %>" name="class" id="class" onchange="validateField('class')">
+          <option value="">Select The Class</option>
+          <% classes.forEach(cls => { %>
+          <option value="<%= cls._id %>" <%= subject.class == cls._id ? 'selected' : '' %>><%= cls.number %></option>
+          <% }) %>
+        </select>
+        <span class="validation-message" id="class-error">
+          <%= validationErrors.find(e => e.param === 'class') ? validationErrors.find(e => e.param === 'class').msg : '' %>
+        </span>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Subject</button>
+      <a href="/admin/subjects" class="btn btn-primary">View Subjects</a>
+    </form>
+  </main>
+
+  <%- include('../includes/end.ejs') %>
+</body>
+
+<script>
+  function validateForm() {
+    let isValid = true;
+
+    let name = document.getElementById('name').value;
+    let description = document.getElementById('description').value;
+    let classValue = document.getElementById('class').value;
+
+    let nameCheck = /^[a-zA-Z\s]{3,30}$/;
+    let descriptionCheck = /^.{5,400}$/;
+
+    clearErrors();
+
+    if (!nameCheck.test(name)) {
+      displayError('name', "Invalid Name! Name must contain only letters and be between 3 to 30 characters long.");
+      isValid = false;
+    }
+    if (!descriptionCheck.test(description)) {
+      displayError('description', "Invalid Description! Description must be between 5 and 400 characters long.");
+      isValid = false;
+    }
+    if (classValue === '') {
+      displayError('class', "Please select a class.");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function clearErrors() {
+    document.getElementById('name-error').innerHTML = "";
+    document.getElementById('description-error').innerHTML = "";
+    document.getElementById('class-error').innerHTML = "";
+    document.getElementById('name').classList.remove('invalid');
+    document.getElementById('description').classList.remove('invalid');
+    document.getElementById('class').classList.remove('invalid');
+  }
+
+  function displayError(field, message) {
+    document.getElementById(`${field}-error`).innerHTML = message;
+    document.getElementById(field).classList.add('invalid');
+  }
+
+  function validateField(fieldId) {
+    let value = document.getElementById(fieldId).value;
+    let nameCheck = /^[a-zA-Z\s]{3,30}$/;
+    let descriptionCheck = /^.{5,400}$/;
+
+    document.getElementById(`${fieldId}-error`).innerHTML = "";
+    document.getElementById(fieldId).classList.remove('invalid');
+
+    if (fieldId === 'name' && !nameCheck.test(value)) {
+      displayError(fieldId, "Invalid Name! Name must contain only letters and be between 3 to 30 characters long.");
+    }
+
+    if (fieldId === 'description' && !descriptionCheck.test(value)) {
+      displayError(fieldId, "Invalid Description! Description must be between 5 and 400 characters long.");
+    }
+
+    if (fieldId === 'class' && value === '') {
+      displayError(fieldId, "Please select a class.");
+    }
+  }
+
+  document.getElementById('name').addEventListener('input', () => validateField('name'));
+  document.getElementById('description').addEventListener('input', () => validateField('description'));
+  document.getElementById('class').addEventListener('change', () => validateField('class'));
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+
+  function upper() {
+    let name = document.getElementById("name");
+    name.value = name.value.toUpperCase();
+  }
+</script>

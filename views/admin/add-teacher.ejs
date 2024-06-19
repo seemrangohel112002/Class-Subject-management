@@ -1,0 +1,235 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .form-control.invalid {
+    border-color: #d20404;
+  }
+
+  .validation-message {
+    color: #d20404;
+    font-weight: bolder;
+    margin-top: 5px;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+  <main style="margin-right: 10%; margin-left: 10%; margin-top: 2%;">
+    <form method="POST" action="/admin/add-teacher" onsubmit="return validateForm()">
+      <h2><b>Add Teacher</b></h2>
+      <% if (errorMessage) { %>
+      <div class="validation-message"><%= errorMessage %></div>
+      <% } %>
+      <div class="form-group">
+        <label for="name">Enter Teacher Name</label>
+        <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'name') ? 'invalid' : '' %>" name="name" id="name" placeholder="Enter Teacher name"  value="<%= teacher.name || '' %>" onchange="return upper()" onchange="validateField('name')">
+        <span class="validation-message" id="name-error">
+          <%= validationErrors.find(e => e.param === 'name') ? validationErrors.find(e => e.param === 'name').msg : '' %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control <%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>" name="email" id="email" placeholder="Enter email"  value="<%= teacher.email || '' %>" onchange="validateField('email')">
+        <span class="validation-message" id="email-error">
+          <%= validationErrors.find(e => e.param === 'email') ? validationErrors.find(e => e.param === 'email').msg : '' %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="code">Country Code</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'code') ? 'invalid' : '' %>" name="code" id="code"  onchange="validateField('code')">
+          <option value="">Select The Country Code</option>
+          <option value="India" <%= teacher.code === 'India' ? 'selected' : '' %>>INDIA +91</option>
+          <option value="china" <%= teacher.code === 'china' ? 'selected' : '' %>>CHINA +86</option>
+          <option value="USA" <%= teacher.code === 'USA' ? 'selected' : '' %>>USA +1</option>
+          <option value="UK" <%= teacher.code === 'UK' ? 'selected' : '' %>>UK +44</option>
+        </select>
+        <span class="validation-message" id="code-error">
+          <%= validationErrors.find(e => e.param === 'code') ? validationErrors.find(e => e.param === 'code').msg : '' %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="number">Number</label>
+        <input type="number" class="form-control <%= validationErrors.find(e => e.param === 'number') ? 'invalid' : '' %>" name="number" id="number" placeholder="Enter Number"  value="<%= teacher.number || '' %>" onchange="validateField('number')">
+        <span class="validation-message" id="number-error">
+          <%= validationErrors.find(e => e.param === 'number') ? validationErrors.find(e => e.param === 'number').msg : '' %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="class">Class</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'class') ? 'invalid' : '' %>" name="class" id="class"  onchange="validateField('class')" >
+          <option value="">Select The Class</option>
+          <% classes.forEach(cls => { %>
+          <option value="<%= cls._id %>" <%= teacher.class === cls._id ? 'selected' : '' %>><%= cls.number %></option>
+          <% }) %>
+        </select>
+        <span class="validation-message" id="class-error">
+          <%= validationErrors.find(e => e.param === 'class') ? validationErrors.find(e => e.param === 'class').msg : '' %>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="division">Division</label>
+        <select class="form-control <%= validationErrors.find(e => e.param === 'division') ? 'invalid' : '' %>" name="division" id="division"  onchange="validateField('division')">
+          <option value="">Select The Division</option>
+          <% divisions.forEach(div => { %>
+          <option value="<%= div._id %>" <%= teacher.division === div._id ? 'selected' : '' %>><%= div.name %></option>
+          <% }) %>
+        </select>
+        <span class="validation-message" id="division-error">
+          <%= validationErrors.find(e => e.param === 'division') ? validationErrors.find(e => e.param === 'division').msg : '' %>
+        </span>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Teacher</button>
+      <a href="/admin/teachers" class="btn btn-primary">View Teachers</a>
+    </form>
+  </main>
+
+  <%- include('../includes/end.ejs') %>
+</body>
+
+<script>
+  function validateForm() {
+    let isValid = true;
+
+    let name = document.getElementById('name').value;
+    let email = document.getElementById('email').value;
+    let code = document.getElementById('code').value;
+    let number = document.getElementById('number').value;
+    let classValue = document.getElementById('class').value;
+    let division = document.getElementById('division').value;
+
+    let nameCheck = /^[a-zA-Z\s]{3,30}$/;
+    let emailCheck = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    let numberCheck = /^[0-9]{10}$/;
+
+    clearErrors();
+
+    if (!nameCheck.test(name)) {
+      displayError('name', "Invalid Name! Name must contain only letters and be between 3 to 30 characters long.");
+      isValid = false;
+    }
+    if (!emailCheck.test(email)) {
+      displayError('email', "Invalid email! Please enter a valid email. 'example@example.com'");
+      isValid = false;
+    }
+    if (code === '') {
+      displayError('code', "Please select a Country Code.");
+      isValid = false;
+    }
+    if (!numberCheck.test(number)) {
+      displayError('number', "Invalid Number! Please enter a valid number.");
+      isValid = false;
+    }
+    if (classValue === '') {
+      displayError('class', "Please select a class.");
+      isValid = false;
+    }
+    if (division === '') {
+      displayError('division', "Please select a division.");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function clearErrors() {
+    document.getElementById('name-error').innerHTML = "";
+    document.getElementById('email-error').innerHTML = "";
+    document.getElementById('code-error').innerHTML = "";
+    document.getElementById('number-error').innerHTML = "";
+    document.getElementById('class-error').innerHTML = "";
+    document.getElementById('division-error').innerHTML = "";
+    document.getElementById('name').classList.remove('invalid');
+    document.getElementById('email').classList.remove('invalid');
+    document.getElementById('code').classList.remove('invalid');
+    document.getElementById('number').classList.remove('invalid');
+    document.getElementById('class').classList.remove('invalid');
+    document.getElementById('division').classList.remove('invalid');
+  }
+
+  function displayError(field, message) {
+    document.getElementById(`${field}-error`).innerHTML = message;
+    document.getElementById(field).classList.add('invalid');
+  }
+
+  function validateField(fieldId) {
+    let value = document.getElementById(fieldId).value;
+    let nameCheck = /^[a-zA-Z\s]{3,30}$/;
+    let emailCheck = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    let numberCheck = /^[0-9]{10}$/;
+
+    document.getElementById(`${fieldId}-error`).innerHTML = "";
+    document.getElementById(fieldId).classList.remove('invalid');
+
+    if (fieldId === 'name' && !nameCheck.test(value)) {
+      displayError(fieldId, "Invalid Name! Name must contain only letters and be between 3 to 30 characters long.");
+    }
+
+    if (fieldId === 'email' && !emailCheck.test(value)) {
+      displayError(fieldId, "Invalid email! Please enter a valid email. 'example@example.com'");
+    }
+
+    if (fieldId === 'code' && value === '') {
+      displayError(fieldId, "Please select a Country Code.");
+    }
+
+    if (fieldId === 'number' && !numberCheck.test(value)) {
+      displayError(fieldId, "Invalid Number! Please enter a valid number.");
+    }
+
+    if (fieldId === 'class' && value === '') {
+      displayError(fieldId, "Please select a class.");
+    }
+
+    if (fieldId === 'division' && value === '') {
+      displayError(fieldId, "Please select a division.");
+    }
+  }
+
+  document.getElementById('name').addEventListener('input', () => validateField('name'));
+  document.getElementById('email').addEventListener('input', () => validateField('email'));
+  document.getElementById('code').addEventListener('change', () => validateField('code'));
+  document.getElementById('number').addEventListener('input', () => validateField('number'));
+  document.getElementById('class').addEventListener('change', () => validateField('class'));
+  document.getElementById('division').addEventListener('change', () => validateField('division'));
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      location.reload(true);
+    }
+  });
+
+  function upper() {
+    let name = document.getElementById("name");
+    name.value = name.value.toUpperCase();
+  }
+</script>

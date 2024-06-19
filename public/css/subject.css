@@ -1,0 +1,27 @@
+.subject-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+}
+
+.subject-item {
+    width: 20rem;
+    max-width: 95%;
+    margin: 1rem;
+}
+
+.subject__title {
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.subject__price {
+    text-align: center;
+    color: #4d4d4d;
+    margin-bottom: 0.5rem;
+}
+
+.subject__description {
+    text-align: center;
+}
